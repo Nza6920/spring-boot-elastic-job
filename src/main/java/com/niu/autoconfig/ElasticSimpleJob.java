@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.*;
 
 /**
- * 简单任务注解
+ * Simple Job 注解
  *
  * @author [nza]
  * @version 1.0 2020/12/20

@@ -33,9 +33,12 @@ public class SimpleJobAutoConfig {
 
     private final ZookeeperRegistryCenter zookeeperRegistryCenter;
 
+
     /**
-     * 初始化SimpleJob
+     * @Description: 注册 SimpleJob
      * 构造方法之后执行
+     * @Author: nza
+     * @Date: 2020/12/20
      */
     @PostConstruct
     public void initSimpleJob() {
