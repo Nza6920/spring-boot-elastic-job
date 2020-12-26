@@ -1,10 +1,12 @@
 package com.niu.autoconfig;
 
+import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
 import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 import lombok.AllArgsConstructor;
@@ -67,8 +69,8 @@ public class SimpleJobAutoConfig {
                             .overwrite(overwrite)
                             .build();
 
-                    // 注册任务
-                    new JobScheduler(zookeeperRegistryCenter, ljc).init();
+                    // 注册任务, 注意这里需要使用 SpringJobScheduler
+                    new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc).init();
 
                     break;
                 }
