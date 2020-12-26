@@ -68,7 +68,7 @@ public class DataFlowAutoConfig extends BaseJobAutoConfig {
                             .build();
                     DataflowJobConfiguration jtc = new DataflowJobConfiguration(
                             jcc,
-                            bean.getClass().getCanonicalName(),
+                            clazz.getCanonicalName(),
                             streamingProcess);
 
                     LiteJobConfiguration ljc = LiteJobConfiguration.newBuilder(jtc)

@@ -66,7 +66,7 @@ public class SimpleJobAutoConfig extends BaseJobAutoConfig {
                     JobCoreConfiguration jcc = JobCoreConfiguration
                             .newBuilder(jobName, corn, totalCount)
                             .build();
-                    SimpleJobConfiguration jtc = new SimpleJobConfiguration(jcc, bean.getClass().getCanonicalName());
+                    SimpleJobConfiguration jtc = new SimpleJobConfiguration(jcc, clazz.getCanonicalName());
 
                     LiteJobConfiguration ljc = LiteJobConfiguration.newBuilder(jtc)
                             .overwrite(overwrite)
