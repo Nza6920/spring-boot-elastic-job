@@ -28,7 +28,7 @@ import java.util.Map;
 @ConditionalOnBean(CoordinatorRegistryCenter.class)
 @AutoConfigureAfter(ZookeeperAutoConfig.class)
 @AllArgsConstructor
-public class DataFlowAutoConfig {
+public class DataFlowAutoConfig extends BaseJobAutoConfig {
 
     private final ApplicationContext applicationContext;
 
@@ -52,7 +52,11 @@ public class DataFlowAutoConfig {
 
                 // 实现了 DataFlowJob 才注册
                 if (superInterface == DataflowJob.class) {
-                    ElasticDataFlowJob annotation = bean.getClass().getAnnotation(ElasticDataFlowJob.class);
+
+                    // 获取 Job 的Class
+                    Class<?> clazz = getJobClass(bean);
+
+                    ElasticDataFlowJob annotation = clazz.getAnnotation(ElasticDataFlowJob.class);
                     String jobName = annotation.jobName();
                     String corn = annotation.corn();
                     int totalCount = annotation.shardingTotalCount();

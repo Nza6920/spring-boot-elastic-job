@@ -4,7 +4,6 @@ import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
-import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
@@ -29,7 +28,7 @@ import java.util.Map;
 @ConditionalOnBean(CoordinatorRegistryCenter.class)
 @AutoConfigureAfter(ZookeeperAutoConfig.class)
 @AllArgsConstructor
-public class SimpleJobAutoConfig {
+public class SimpleJobAutoConfig extends BaseJobAutoConfig {
 
     private final ApplicationContext applicationContext;
 
@@ -54,7 +53,11 @@ public class SimpleJobAutoConfig {
 
                 // 实现了 SimpleJob 才注册
                 if (superInterface == SimpleJob.class) {
-                    ElasticSimpleJob annotation = bean.getClass().getAnnotation(ElasticSimpleJob.class);
+
+                    // 获取 Job 的Class
+                    Class<?> clazz = getJobClass(bean);
+
+                    ElasticSimpleJob annotation = clazz.getAnnotation(ElasticSimpleJob.class);
                     String jobName = annotation.jobName();
                     String corn = annotation.corn();
                     int totalCount = annotation.shardingTotalCount();
