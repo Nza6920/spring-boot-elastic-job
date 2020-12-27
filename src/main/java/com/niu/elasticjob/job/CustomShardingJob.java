@@ -3,7 +3,7 @@ package com.niu.elasticjob.job;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.niu.autoconfig.ElasticSimpleJob;
-import com.niu.autoconfig.sharding.MyShardingStrategy;
+import com.niu.elasticjob.sharding.MyShardingStrategy;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,13 +14,13 @@ import lombok.extern.slf4j.Slf4j;
  * @createTime 15:54
  */
 @Slf4j
-@ElasticSimpleJob(jobName = "customShardingJob",
-        corn = "0/10 * * * * ?",
-        shardingTotalCount = 3,
-        overwrite = true,
-        jobStrategy = MyShardingStrategy.class,
-        jobEvent = true
-)
+//@ElasticSimpleJob(jobName = "customShardingJob",
+//        corn = "0/10 * * * * ?",
+//        shardingTotalCount = 3,
+//        overwrite = true,
+//        jobStrategy = MyShardingStrategy.class,
+//        jobEvent = true
+//)
 public class CustomShardingJob implements SimpleJob {
     @Override
     public void execute(ShardingContext context) {

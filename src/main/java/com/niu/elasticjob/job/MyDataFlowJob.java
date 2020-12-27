@@ -16,12 +16,12 @@ import java.util.List;
  * @createTime 15:47
  */
 @Slf4j
-@ElasticDataFlowJob(jobName = "myDataFlowJob",
-        corn = "0/10 * * * * ?",
-        shardingTotalCount = 2,
-        overwrite = true,
-        streamingProcess = true
-)
+//@ElasticDataFlowJob(jobName = "myDataFlowJob",
+//        corn = "0/10 * * * * ?",
+//        shardingTotalCount = 2,
+//        overwrite = true,
+//        streamingProcess = true
+//)
 public class MyDataFlowJob implements DataflowJob<Integer> {
 
     /**

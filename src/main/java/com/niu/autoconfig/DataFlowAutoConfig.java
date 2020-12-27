@@ -6,12 +6,15 @@ import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
 import com.dangdang.ddframe.job.event.JobEventConfiguration;
 import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
+import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
-import lombok.AllArgsConstructor;
+import com.google.common.collect.Lists;
+import com.niu.elasticjob.listener.MyNormalListener;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -20,6 +23,8 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +38,7 @@ import java.util.Map;
 @ConditionalOnBean(CoordinatorRegistryCenter.class)
 @AutoConfigureAfter(ZookeeperAutoConfig.class)
 @RequiredArgsConstructor
+@Slf4j
 public class DataFlowAutoConfig extends BaseJobAutoConfig {
 
     private final ApplicationContext applicationContext;
@@ -72,6 +78,17 @@ public class DataFlowAutoConfig extends BaseJobAutoConfig {
                     boolean streamingProcess = annotation.streamingProcess();
                     Class<?> jobStrategy = annotation.jobStrategy();
                     boolean jobEvent = annotation.jobEvent();
+                    Class<? extends ElasticJobListener>[] jobListeners = annotation.jobListener();
+                    List<ElasticJobListener> jobListenerList = Lists.newArrayList();
+                    if (jobListeners.length > 0) {
+                        for (Class<? extends ElasticJobListener> item : jobListeners) {
+                            try {
+                                jobListenerList.add(item.getDeclaredConstructor().newInstance());
+                            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+                                log.error("自动配置 DataFlow 发生异常, 异常信息: ", e);
+                            }
+                        }
+                    }
 
                     JobCoreConfiguration jcc = JobCoreConfiguration
                             .newBuilder(jobName, corn, totalCount)
@@ -86,14 +103,20 @@ public class DataFlowAutoConfig extends BaseJobAutoConfig {
                             .jobShardingStrategyClass(jobStrategy.getCanonicalName())
                             .build();
 
+                    SpringJobScheduler jobScheduler;
+                    MyNormalListener normalListener = new MyNormalListener();
+                    ElasticJobListener[] jobListenerArray = jobListenerList.toArray(new ElasticJobListener[0]);
+
                     // 判断是否开启了时间追踪
                     if (jobEvent && dataSource != null) {
                         JobEventConfiguration jec = new JobEventRdbConfiguration(dataSource);
-                        new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc, jec).init();
+                        jobScheduler = new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc, jec, jobListenerArray);
                     } else {
                         // 注册任务, 注意这里需要使用 SpringJobScheduler
-                        new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc).init();
+                        jobScheduler = new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc, jobListenerArray);
                     }
+
+                    jobScheduler.init();
 
                     break;
                 }

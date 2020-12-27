@@ -1,4 +1,4 @@
-package com.niu.autoconfig.sharding;
+package com.niu.elasticjob.sharding;
 
 import com.dangdang.ddframe.job.lite.api.strategy.JobInstance;
 import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;

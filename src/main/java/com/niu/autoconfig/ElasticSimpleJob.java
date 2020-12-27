@@ -1,5 +1,6 @@
 package com.niu.autoconfig;
 
+import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
 import org.springframework.stereotype.Component;
 
@@ -49,5 +50,10 @@ public @interface ElasticSimpleJob {
      * 是否开启时间追踪
      */
     boolean jobEvent() default false;
+
+    /**
+     * 任务监听器
+     */
+    Class<? extends ElasticJobListener>[] jobListener() default {};
 }
 
