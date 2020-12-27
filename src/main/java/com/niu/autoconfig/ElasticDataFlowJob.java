@@ -49,4 +49,9 @@ public @interface ElasticDataFlowJob {
      * 默认平均分配
      */
     Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
+
+    /**
+     * 是否开启时间追踪
+     */
+    boolean jobEvent() default false;
 }

@@ -18,7 +18,8 @@ import lombok.extern.slf4j.Slf4j;
         corn = "0/10 * * * * ?",
         shardingTotalCount = 3,
         overwrite = true,
-        jobStrategy = MyShardingStrategy.class
+        jobStrategy = MyShardingStrategy.class,
+        jobEvent = true
 )
 public class CustomShardingJob implements SimpleJob {
     @Override

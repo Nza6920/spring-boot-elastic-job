@@ -4,18 +4,23 @@ import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
+import com.dangdang.ddframe.job.event.JobEventConfiguration;
+import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 import com.niu.autoconfig.sharding.MyShardingStrategy;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -28,13 +33,15 @@ import java.util.Map;
 @Configuration
 @ConditionalOnBean(CoordinatorRegistryCenter.class)
 @AutoConfigureAfter(ZookeeperAutoConfig.class)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SimpleJobAutoConfig extends BaseJobAutoConfig {
 
     private final ApplicationContext applicationContext;
 
     private final ZookeeperRegistryCenter zookeeperRegistryCenter;
 
+    @Autowired(required = false)
+    private DataSource dataSource;
 
     /**
      * @Description: 注册 SimpleJob
@@ -64,6 +71,7 @@ public class SimpleJobAutoConfig extends BaseJobAutoConfig {
                     int totalCount = annotation.shardingTotalCount();
                     boolean overwrite = annotation.overwrite();
                     Class<?> jobStrategy = annotation.jobStrategy();
+                    boolean jobEvent = annotation.jobEvent();
 
                     JobCoreConfiguration jcc = JobCoreConfiguration
                             .newBuilder(jobName, corn, totalCount)
@@ -75,8 +83,15 @@ public class SimpleJobAutoConfig extends BaseJobAutoConfig {
                             .jobShardingStrategyClass(jobStrategy.getCanonicalName())
                             .build();
 
-                    // 注册任务, 注意这里需要使用 SpringJobScheduler
-                    new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc).init();
+                    // 判断是否开启了时间追踪
+                    if (jobEvent && dataSource != null) {
+                        JobEventConfiguration jec = new JobEventRdbConfiguration(dataSource);
+                        new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc, jec).init();
+                    } else {
+                        // 注册任务, 注意这里需要使用 SpringJobScheduler
+                        new SpringJobScheduler((ElasticJob) bean, zookeeperRegistryCenter, ljc).init();
+                    }
+
 
                     break;
                 }
