@@ -1,5 +1,6 @@
 package com.niu.autoconfig;
 
+import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
@@ -42,4 +43,10 @@ public @interface ElasticDataFlowJob {
      * 是否流式处理
      */
     boolean streamingProcess() default false;
+
+    /**
+     * 分片策略
+     * 默认平均分配
+     */
+    Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
 }

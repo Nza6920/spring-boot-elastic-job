@@ -62,6 +62,7 @@ public class DataFlowAutoConfig extends BaseJobAutoConfig {
                     int totalCount = annotation.shardingTotalCount();
                     boolean overwrite = annotation.overwrite();
                     boolean streamingProcess = annotation.streamingProcess();
+                    Class<?> jobStrategy = annotation.jobStrategy();
 
                     JobCoreConfiguration jcc = JobCoreConfiguration
                             .newBuilder(jobName, corn, totalCount)
@@ -73,6 +74,7 @@ public class DataFlowAutoConfig extends BaseJobAutoConfig {
 
                     LiteJobConfiguration ljc = LiteJobConfiguration.newBuilder(jtc)
                             .overwrite(overwrite)
+                            .jobShardingStrategyClass(jobStrategy.getCanonicalName())
                             .build();
 
                     // 注册任务, 注意这里需要使用 SpringJobScheduler

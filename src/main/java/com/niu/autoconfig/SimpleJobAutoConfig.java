@@ -8,6 +8,7 @@ import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
+import com.niu.autoconfig.sharding.MyShardingStrategy;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -62,6 +63,7 @@ public class SimpleJobAutoConfig extends BaseJobAutoConfig {
                     String corn = annotation.corn();
                     int totalCount = annotation.shardingTotalCount();
                     boolean overwrite = annotation.overwrite();
+                    Class<?> jobStrategy = annotation.jobStrategy();
 
                     JobCoreConfiguration jcc = JobCoreConfiguration
                             .newBuilder(jobName, corn, totalCount)
@@ -70,6 +72,7 @@ public class SimpleJobAutoConfig extends BaseJobAutoConfig {
 
                     LiteJobConfiguration ljc = LiteJobConfiguration.newBuilder(jtc)
                             .overwrite(overwrite)
+                            .jobShardingStrategyClass(jobStrategy.getCanonicalName())
                             .build();
 
                     // 注册任务, 注意这里需要使用 SpringJobScheduler
