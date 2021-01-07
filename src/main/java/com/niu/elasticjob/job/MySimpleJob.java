@@ -13,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
  * @createTime 14:02
  */
 @Slf4j
-//@ElasticSimpleJob(jobName = "mySimpleJob",
-//        corn = "0/10 * * * * ?",
-//        shardingTotalCount = 2,
-//        overwrite = true
-//)
+@ElasticSimpleJob(jobName = "mySimpleJob",
+        corn = "0/10 * * * * ?",
+        shardingTotalCount = 2,
+        overwrite = true
+)
 public class MySimpleJob implements SimpleJob {
     @Override
     public void execute(ShardingContext context) {

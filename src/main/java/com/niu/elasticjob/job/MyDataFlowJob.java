@@ -16,12 +16,12 @@ import java.util.List;
  * @createTime 15:47
  */
 @Slf4j
-//@ElasticDataFlowJob(jobName = "myDataFlowJob",
-//        corn = "0/10 * * * * ?",
-//        shardingTotalCount = 2,
-//        overwrite = true,
-//        streamingProcess = true
-//)
+@ElasticDataFlowJob(jobName = "myDataFlowJob",
+        corn = "0/10 * * * * ?",
+        shardingTotalCount = 2,
+        overwrite = true,
+        streamingProcess = true
+)
 public class MyDataFlowJob implements DataflowJob<Integer> {
 
     /**
@@ -66,7 +66,6 @@ public class MyDataFlowJob implements DataflowJob<Integer> {
         DATA.removeAll(data);
 
         log.info("我是分片项: {}, 我移除的数据时: {}", context.getShardingItem(), data);
-
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {

@@ -24,7 +24,6 @@ public @interface ElasticSimpleJob {
      */
     String jobName() default "";
 
-
     /**
      * corn 表达式
      */
@@ -47,7 +46,7 @@ public @interface ElasticSimpleJob {
     Class<?> jobStrategy() default AverageAllocationJobShardingStrategy.class;
 
     /**
-     * 是否开启时间追踪
+     * 是否开启事件追踪
      */
     boolean jobEvent() default false;
 
